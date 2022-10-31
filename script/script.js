@@ -38,7 +38,7 @@ function userStatusOnline(){
         name: inputName
     };
 
-    const stillOnline = axios.post('https://mock-api.driven.com.br/api/v6/uol/status', userName);
+    const stillOnline = axios.post('https://mock-api.driven.com.br/api/v6/uol/status', inputName);
 
     setInterval(stillOnline, 5000);
 }
@@ -52,9 +52,9 @@ function searchMessages(){
     });
 }
 
+// função que renderiza o chat
 function responseMessages(response){
     const chat = document.querySelector('main');
-    let message = '';
 
     for(let i = 0; i < response.data.lenght; i++){
         from = response[i].data.from;
@@ -65,17 +65,18 @@ function responseMessages(response){
     }
 
     if(type === 'status'){
-        message.innerHTML += `<div class='status'>
+        messageInput.value += `<div class='status'>
         <span class='time'>(${time})</span> <strong>${from}</strong> ${text}
         </div>`
     } else if(type === 'message'){
-        message.innerHTML += `<div class='chat'>
+        messageInput.value += `<div class='chat'>
         <span class='time'>(${time})</span> <strong>${from}</strong> ${text}
         </div>`
     }
 
-    chat.innerHTML += message;
+    chat.innerHTML += messageInput;
     chat.scrollIntoView();
+    messageInput.value = '';
 }
 
 // função que envia as messagens
