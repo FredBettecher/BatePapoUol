@@ -4,8 +4,7 @@ let to;
 let text;
 let type;
 let time;
-let lastMessage;
-let messageInput = document.querySelector('.paper-plane-icon');
+let messageInput = document.querySelector('.msg-bx');
 
 // função que pergunta o nome do usuário
 function requestName(){
@@ -46,21 +45,14 @@ function userStatusOnline(){
 
 // função que busca mensagens
 function searchMessages(){
-    let update;
     let messages = axios.get('https://mock-api.driven.com.br/api/v6/uol/messages');
     messages.then(responseMessages);
-
-    if(update < messages[messages.lenght-1].time){
-        responseMessages(messages);
-    }
-
-    update = messages[messages.lenght-1].time;
 }
 
 function responseMessages(response){
-    chat = document.querySelector('.chat');
-    content.innerHTML = '';
-    response = axios.get('https://mock-api.driven.com.br/api/v6/uol/messages');
+    chat = document.querySelector('main');
+    chat.innerHTML = '';
+
     for(let i = 0; i < response.data.lenght; i++){
         from = response[i].data.from;
 		to = response[i].data.to;
@@ -70,31 +62,34 @@ function responseMessages(response){
     }
 
     if(type === 'status'){
-        content.innerHTML += `<div class='status'>
-        <span class = 'time'>(${time})</span> <strong>${inputName}</strong> ${text}
+        chat.innerHTML += `<div class='status'>
+        <span class='time'>(${time})</span> <strong>${from}</strong> ${text}
         </div>`
     } else if(type === 'message'){
-        content.innerHTML += `<div class='chat'>
-        <span class = 'time'>(${time})</span> <strong>${inputName}</strong> ${text}
+        chat.innerHTML += `<div class='chat'>
+        <span class='time'>(${time})</span> <strong>${from}</strong> ${text}
         </div>`
     }
 
-    lastMessage = document.querySelectorAll('chat').lastElementChild;
-    lastMessage.scrollIntoView();
+    chat.scrollIntoView();
 }
 
 // função que envia as messagens
 function sendMessage(){
-    axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', {
+    let toSend = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', {
             from: inputName,
-            to: "Todos",
+            to: 'Todos',
             text: messageInput.value,
             type: 'message'
     });
-    
-    messageInput.value = '';
+
+    toSend.then(searchMessages);
 }
 
 requestName();
 userStatusOnline();
 searchMessages();
+
+setInterval(() => {
+    searchMessages();
+  }, 3000);
