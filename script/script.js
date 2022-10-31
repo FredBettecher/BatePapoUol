@@ -47,11 +47,14 @@ function userStatusOnline(){
 function searchMessages(){
     let messages = axios.get('https://mock-api.driven.com.br/api/v6/uol/messages');
     messages.then(responseMessages);
+    messages.catch(() => {
+        window.location.reload()
+    });
 }
 
 function responseMessages(response){
-    chat = document.querySelector('main');
-    chat.innerHTML = '';
+    const chat = document.querySelector('main');
+    let message = '';
 
     for(let i = 0; i < response.data.lenght; i++){
         from = response[i].data.from;
@@ -62,15 +65,16 @@ function responseMessages(response){
     }
 
     if(type === 'status'){
-        chat.innerHTML += `<div class='status'>
+        message.innerHTML += `<div class='status'>
         <span class='time'>(${time})</span> <strong>${from}</strong> ${text}
         </div>`
     } else if(type === 'message'){
-        chat.innerHTML += `<div class='chat'>
+        message.innerHTML += `<div class='chat'>
         <span class='time'>(${time})</span> <strong>${from}</strong> ${text}
         </div>`
     }
 
+    chat.innerHTML += message;
     chat.scrollIntoView();
 }
 
@@ -89,7 +93,3 @@ function sendMessage(){
 requestName();
 userStatusOnline();
 searchMessages();
-
-setInterval(() => {
-    searchMessages();
-  }, 3000);
